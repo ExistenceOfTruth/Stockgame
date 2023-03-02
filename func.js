@@ -8,36 +8,23 @@ function changeStockPrice(price) {
     return tmp == 0 ? random(price - effectPrice, price) : random(price, price + effectPrice);
 }
 
-function doge(io) {
-    let startPrice = 200000;
-    const send = (io) => {
-        startPrice = changeStockPrice(startPrice);
-        io.sockets.emit('msg', startPrice);
-        console.log(`doge | ${startPrice}`);
-    }
-    send(io);
-}
+function stockSystem(io) {
+    let dogePrice = 20000;
+    let samsungPrice = 20000;
+    let teslaPrice = 20000;
 
-function samsung(io) {
-    let startPrice = 200000;
-    const send = (io) => {
-        startPrice = changeStockPrice(startPrice);
-        io.sockets.emit('msg', startPrice);
-        console.log(`samsung | ${startPrice}`);
-    }
-    send(io);
-}
+    dogePrice = changeStockPrice(dogePrice);
+    samsungPrice = changeStockPrice(samsungPrice);
+    teslaPrice = changeStockPrice(teslaPrice);
 
-function tesla(io) {
-    let startPrice = 200000;
-    const send = (io) => {
-        startPrice = changeStockPrice(startPrice);
-        io.sockets.emit('msg', startPrice);
-        console.log(`tesla | ${startPrice}`);
-    }
-    send(io);
+    io.sockets.emit('msg', {
+        dogePrice, samsungPrice, teslaPrice
+    });
+    console.log({
+        dogePrice, samsungPrice, teslaPrice
+    });
 }
 
 module.exports = {
-    doge, samsung, tesla
+    stockSystem
 }

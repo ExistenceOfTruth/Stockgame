@@ -1,12 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <script>
+        $(document).ready(() => {
+            document.getElementById("doge").style.display = "block";
+
+        });
+        function openCity(evt, tab) {
+            // Declare all variables
+            let i, tabcontent, tablinks;
+
+            // Get all elements with class="tabcontent" and hide them
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tablinks" and remove the class "active"
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tab).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
 </head>
+
 <body>
-    
+    <div class="container">
+        <div class="chart">
+            <div class="tab">
+                <button class="tablinks active" onclick="openCity(event, 'doge')">도지</button>
+                <button class="tablinks" onclick="openCity(event, 'samsung')">삼성</button>
+                <button class="tablinks" onclick="openCity(event, 'tesla')">테슬라</button>
+            </div>
+
+            <div id="doge" class="tabcontent" style="display: none;">
+                <div id="wrapper">
+                    <div>
+                        <!--차트가 그려질 부분-->
+                        <canvas id="doge-chart"></canvas>
+                        <h4 id="doge-price">0</h4>
+                        <h4 id="doge-diff">0</h4>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="samsung" class="tabcontent" style="display: none;">
+                <div id="wrapper">
+                    <div>
+                        <!--차트가 그려질 부분-->
+                        <canvas id="samsung-chart"></canvas>
+                        <h4 id="samsung-price">0</h4>
+                        <h4 id="samsung-diff">0</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tesla" class="tabcontent" style="display: none;">
+                <div id="wrapper">
+                    <div>
+                        <!--차트가 그려질 부분-->
+                        <canvas id="tesla-chart"></canvas>
+                        <h4 id="tesla-price">0</h4>
+                        <h4 id="tesla-diff">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--script-->
+    <script>
+        let dds = [];
+        let sds = [];
+        let tds = [];
+
+        let dogeData = [];
+        let samsungData = [];
+        let teslaData = [];
+        for (let i = 0; i < 10; i++) {
+            dds.push(i);
+            sds.push(i);
+            tds.push(i);
+        }
+        let once = false;
+        let options = {
+            //responsive: false,
+            legend: {
+                display: false,
+            },
+            scales: {
+                xAxes: [{
+                    display: false,
+                }],
+                yAxes: [{
+                    gridLines: {
+                        lineWidth: 0
+                    },
+                    ticks: {
+                        beginAtZero: true,
+                        min: 0
+                    }
+                }]
+            }
+        };
+        let dogeChart, samsungChart, teslaChart;
+        function create() {
+            dogeChart = new Chart(document.getElementById('doge-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: dds,
+                    datasets: [
+                        {
+                            backgroundColor: 'rgba(255,150,150,0.5)',
+                            borderColor: 'rgb(255,150,150)',
+                            data: dogeData,
+                            lineTension: 0,
+                            fill: true,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                        }
+                    ]
+                },
+                options
+            });
+            samsungChart = new Chart(document.getElementById('samsung-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: sds,
+                    datasets: [
+                        {
+                            backgroundColor: 'rgba(255,150,150,0.5)',
+                            borderColor: 'rgb(255,150,150)',
+                            data: samsungData,
+                            lineTension: 0,
+                            fill: true,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                        }
+                    ]
+                },
+                options
+            });
+            teslaChart = new Chart(document.getElementById('tesla-chart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: tds,
+                    datasets: [
+                        {
+                            backgroundColor: 'rgba(255,150,150,0.5)',
+                            borderColor: 'rgb(255,150,150)',
+                            data: teslaData,
+                            lineTension: 0,
+                            fill: true,
+                            borderWidth: 2,
+                            pointRadius: 0,
+                        }
+                    ]
+                },
+                options
+            });
+        }
+
+        let prev = 0;
+        let now = 0;
+        let socket = io.connect('http://localhost:3000/');
+        socket.on('msg', function (data) {
+            prev = now;
+            now = data;
+
+            if (!once) {
+                create();
+                once = true;
+            }
+
+            dogeData.push(now.dogePrice);
+            samsungData.push(now.samsungPrice);
+            teslaData.push(now.teslaPrice);
+
+            const fm = (m) => {
+                const numberFormatter = Intl.NumberFormat('en-US');
+                const formatted = numberFormatter.format(m);
+                return formatted;
+            }
+
+            $("#doge-price").text(fm(now.dogePrice));
+            $("#samsung-price").text(fm(now.samsungPrice));
+            $("#tesla-price").text(fm(now.teslaPrice));
+
+            dds.unshift(dds[0] - 10);
+            sds.unshift(sds[0] - 10);
+            tds.unshift(tds[0] - 10);
+
+            dds.push(dds[dds.length - 1] + 10);
+            sds.push(sds[sds.length - 1] + 10);
+            tds.push(tds[tds.length - 1] + 10);
+
+            const dogeDiff = now.dogePrice - prev.dogePrice;
+            const samsungDiff = now.samsungPrice - prev.samsungPrice;
+            const teslaDiff = now.teslaPrice - prev.teslaPrice;
+
+            if (String(dogeDiff).includes("-")) $("#doge-diff").css({ "color": "#ff6961" });
+            else $("#doge-diff").css({ "color": "green" });
+
+            if (String(samsungDiff).includes("-")) $("#samsung-diff").css({ "color": "#ff6961" });
+            else $("#samsung-diff").css({ "color": "green" });
+
+            if (String(teslaDiff).includes("-")) $("#tesla-diff").css({ "color": "#ff6961" });
+            else $("#tesla-diff").css({ "color": "green" });
+
+            if (String(dogeDiff).includes("-")) $("#doge-diff").text(dogeDiff);
+            else $("#doge-diff").text(`+${dogeDiff}`);
+
+            if (String(samsungDiff).includes("-")) $("#samsung-diff").text(samsungDiff);
+            else $("#samsung-diff").text(`+${samsungDiff}`);
+
+            if (String(teslaDiff).includes("-")) $("#tesla-diff").text(teslaDiff);
+            else $("#tesla-diff").text(`+${teslaDiff}`);
+
+            dogeChart.update();
+            samsungChart.update();
+            teslaChart.update();
+        });
+    </script>
 </body>
+
 </html>
