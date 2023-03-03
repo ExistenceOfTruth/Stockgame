@@ -8,10 +8,10 @@ function changeStockPrice(price) {
     return tmp == 0 ? random(price - effectPrice, price) : random(price, price + effectPrice);
 }
 
+let dogePrice = 20000;
+let samsungPrice = 20000;
+let teslaPrice = 20000;
 function stockSystem(io) {
-    let dogePrice = 20000;
-    let samsungPrice = 20000;
-    let teslaPrice = 20000;
 
     dogePrice = changeStockPrice(dogePrice);
     samsungPrice = changeStockPrice(samsungPrice);
@@ -25,6 +25,10 @@ function stockSystem(io) {
     });
 }
 
+function init() {
+    return { dogePrice, samsungPrice, teslaPrice };
+}
+
 module.exports = {
-    stockSystem
+    init, stockSystem
 }

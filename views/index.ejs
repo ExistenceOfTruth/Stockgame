@@ -42,9 +42,9 @@
     <div class="container">
         <div class="chart">
             <div class="tab">
-                <button class="tablinks active" onclick="openCity(event, 'doge')">도지</button>
-                <button class="tablinks" onclick="openCity(event, 'samsung')">삼성</button>
-                <button class="tablinks" onclick="openCity(event, 'tesla')">테슬라</button>
+                <button class="tablinks active" onclick="openCity(event, 'doge')">도지<hr><span style="display: block;width: 100%;" id="doge-price">0</span><span style="display: block;width: 100%;" id="doge-diff">0</span></button>
+                <button class="tablinks" onclick="openCity(event, 'samsung')">삼성<hr><span style="display: block;width: 100px;" id="samsung-price">0</span><span style="display: block;width: 100px;" id="samsung-diff">0</span></button>
+                <button class="tablinks" onclick="openCity(event, 'tesla')">테슬라<hr><span style="display: block;width: 100px;" id="tesla-price">0</span><span style="display: block;width: 100px;" id="tesla-diff">0</span></button>
             </div>
 
             <div id="doge" class="tabcontent" style="display: none;">
@@ -52,8 +52,6 @@
                     <div>
                         <!--차트가 그려질 부분-->
                         <canvas id="doge-chart"></canvas>
-                        <h4 id="doge-price">0</h4>
-                        <h4 id="doge-diff">0</h4>
 
                     </div>
                 </div>
@@ -64,8 +62,6 @@
                     <div>
                         <!--차트가 그려질 부분-->
                         <canvas id="samsung-chart"></canvas>
-                        <h4 id="samsung-price">0</h4>
-                        <h4 id="samsung-diff">0</h4>
                     </div>
                 </div>
             </div>
@@ -75,8 +71,6 @@
                     <div>
                         <!--차트가 그려질 부분-->
                         <canvas id="tesla-chart"></canvas>
-                        <h4 id="tesla-price">0</h4>
-                        <h4 id="tesla-diff">0</h4>
                     </div>
                 </div>
             </div>
@@ -178,7 +172,7 @@
 
         let prev = 0;
         let now = 0;
-        let socket = io.connect('http://localhost:3000/');
+        let socket = io.connect('http://119.192.144.246:3000/');
         socket.on('msg', function (data) {
             prev = now;
             now = data;

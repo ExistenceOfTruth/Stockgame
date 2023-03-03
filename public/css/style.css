@@ -52,11 +52,11 @@
     width: 100%;
 }
 
-#wrapper div ~ h4 {
-    display: inline-block;
-}
-
-#wrapper div h4:last-child {
-    position: absolute;
-    left: 100px;
+@media screen and (max-width: 600px) {
+    * {
+        font-size: 14px;
+    }
+    .tablinks {
+        width: 100px;
+    }
 }

@@ -1,6 +1,6 @@
 const PORT = 3000;
 const routes = require('./routes/route');
-const { stockSystem } = require('./func');
+const { stockSystem, init } = require('./func');
 
 const app = require('express')();
 const http = require('http').createServer(app);
@@ -16,9 +16,14 @@ const startInterval = (seconds, callback) => {
     return setInterval(callback, seconds * 1000);
 };
 
+io.on('connection', (socket) => {
+    console.log(`${socket.id} connected`);
+    socket.emit('msg', init());
+});
+
 http.listen(PORT, () => {
     console.log(`listening on ${PORT}`);
-    startInterval(1, () => {
+    startInterval(5, () => {
         stockSystem(io);
     });
 });
